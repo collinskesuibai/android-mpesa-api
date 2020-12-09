@@ -32,8 +32,9 @@ If you are using this Library,don't forget the following permission:
 
 That's it, you have the required permissions and ready to go!
 
-## How do I use Daraja?
+## How do I use Daraja? (with Dependency injection (DI))
 Simple use cases with MPESA Express (STKPush) will look something like this:
+
 
 Have a Daraja singleton instance 
 
@@ -94,6 +95,47 @@ Have a Daraja singleton instance
             }
         )
     }
+```
+## How do I use Daraja? (without Dependency injection (DI))
+Create Daraja instance
+```kotlin
+val daraja: Daraja =  Daraja.with(
+            Config.CONSUMER_KEY,
+            Config.CONSUMER_SECRET,
+            Env.SANDBOX,  //Env.PRODUCTION for production
+            object : DarajaListener<AccessToken> {
+                override fun onResult(accessToken: AccessToken) {
+                    lnmExpress = LNMExpress(
+                        Config.BUSINESS_SHORTCODE,
+                        AppUtils.PASS_KEY,
+                        Config.ACCOUNT_TYPE,
+                        "100",
+                        "254708374149",
+                        Config.BUSINESS_SHORTCODE,
+                        "254708374149",
+                        Config.CALLBACK_URL,
+                        "2343de",
+                        "Payment for test 001"
+                    )
+                }
+
+                override fun onError(error: String) {
+                    Log.e("Deposit Fragment", error)
+                }
+            }
+        )
+```
+```kotlin
+  daraja.requestMPESAExpress(lnmExpress, object : DarajaListener<LNMResult> {
+                override fun onResult(result: LNMResult) {
+                    Log.e("Deposit success", result.ResponseDescription)
+                }
+
+                override fun onError(error: String?) {
+                    Log.e("Deposit Fragment error", error.toString())
+                }
+
+    })
 ```
 
 ## Lipa na M-Pesa Online Payment API
